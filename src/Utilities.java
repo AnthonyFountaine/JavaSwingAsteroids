@@ -1,7 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
 
-public class Util {
+public class Utilities {
     public static int randint(int a, int b) {
         return (int)(Math.random()*(b-a+1)+a);
     }
