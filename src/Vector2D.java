@@ -66,4 +66,8 @@ public class Vector2D {
         yComp = calcComponents()[1];
         normalize();
     }
+
+    public Vector2D copy() {
+        return new Vector2D(getMagnitude(), getAngle());
+    }
 }
