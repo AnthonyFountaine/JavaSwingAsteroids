@@ -9,6 +9,7 @@ public class Debris {
     private int speed;
     private int timeOnScreen;
     public final static int LINE = 1, DOT = 2;
+    public final static int DEAD = -2, NULL = -1;
 
 
     public Debris(double x, double y, Vector2D dir, int type) {
@@ -29,9 +30,9 @@ public class Debris {
     }
 
     public void draw(Graphics g) {
-        g.setColor(Color.WHITE);
+        g.setColor(Color.ORANGE);
         if (type == LINE) {
-            g.drawLine((int)x, (int)y, (int)(length * Math.cos(angle)), (int)(length * Math.sin(angle)));
+            g.drawLine((int)x, (int)y, (int)(x + length * Math.cos(angle)), (int)(y + length * Math.sin(angle)));
         }
         else {
             g.fillOval((int) x, (int) y, 3, 3);
@@ -43,5 +44,13 @@ public class Debris {
             return true;
         }
         return false;
+    }
+
+    public int update() {
+        if (checkDead()) {
+            return DEAD; 
+        }
+        move();
+        return NULL;
     }
 }

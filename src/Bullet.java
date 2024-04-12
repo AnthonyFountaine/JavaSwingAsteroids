@@ -8,6 +8,7 @@ public class Bullet {
     private Vector2D dir;
     private int timeOnScreen;
     private final int SPEED = 20;
+    public final static int DEAD = -2, NO_ENEMIES_HIT = -1;
 
     public Bullet(double x, double y, Vector2D dir) {
         this.dir = dir.copy();
@@ -47,13 +48,33 @@ public class Bullet {
     }
 
     public void draw(Graphics g) {
-        g.setColor(Color.WHITE);
+        g.setColor(Color.YELLOW);
         g.fillOval((int)x, (int)y, 4, 4);
     }
 
-    public int update(ArrayList<Asteroid> asteroids) {
+    public int update(ArrayList<Asteroid> asteroids, ArrayList<Debris> debris) {
+        if (checkDead()) {
+            return DEAD;
+        }
         move();
-        return checkAsteroids(asteroids);
+        int collideIndex  = checkAsteroids(asteroids);
+        if (collideIndex  >= 0) {
+            for (int j = 0; j < Utilities.randint(6, 8); j++) {
+                debris.add(new Debris(asteroids.get(collideIndex).getX(),
+                asteroids.get(collideIndex).getY(),new Vector2D(1, Math.toRadians(Utilities.randint(0, 360))), Debris.DOT));
+            }
+            if (asteroids.get(collideIndex).getchildNum() < 2) {
+                for (int i = 0; i < 2; i++) {
+                    asteroids.add(new Asteroid(asteroids.get(collideIndex).getX() + Utilities.randint(-5, 5),
+                    asteroids.get(collideIndex).getY() + Utilities.randint(-5, 5),
+                    asteroids.get(collideIndex).getchildNum() + 1,
+                    new Vector2D(1, Math.toRadians(Utilities.randint(0, 360)))));
+                }
+            }
+            asteroids.remove(collideIndex);
+            return DEAD;
+        }
+        return NO_ENEMIES_HIT;
     }
 
     public boolean checkDead() {
