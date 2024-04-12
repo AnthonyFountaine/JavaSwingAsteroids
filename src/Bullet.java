@@ -1,5 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.util.ArrayList;
 
 public class Bullet {
     private double x, y;
@@ -33,13 +35,25 @@ public class Bullet {
         }
     }
 
+    public int checkAsteroids(ArrayList<Asteroid> asteroids) {
+        Rectangle bRect = getRect();
+        for (int i = 0; i < asteroids.size(); i++) {
+            if (bRect.intersects(asteroids.get(i).getRect())) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     public void draw(Graphics g) {
         g.setColor(Color.WHITE);
         g.fillOval((int)x, (int)y, 4, 4);
     }
 
-    public void update() {
+    public int update(ArrayList<Asteroid> asteroids) {
         move();
+        return checkAsteroids(asteroids);
     }
 
     public boolean checkDead() {
@@ -49,4 +63,7 @@ public class Bullet {
         return false;
     }
 
+    public Rectangle getRect() {
+        return new Rectangle((int)x, (int)y, 4, 4);
+    }
 }

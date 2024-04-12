@@ -11,6 +11,7 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
     Player player;
 	ArrayList<Bullet> bullets;
 	ArrayList<Asteroid> asteroids;
+	ArrayList<Debris> debris;
 	int lastCalcedShots, shotsRemaining;
 
     public GamePanel() {
@@ -22,6 +23,7 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
         player = new Player();
 		bullets = new ArrayList<Bullet>();
 		asteroids = new ArrayList<Asteroid>();
+		debris = new ArrayList<Debris>();
 		for (int i = 0; i < 5; i++) {
 			asteroids.add(new Asteroid(Utilities.randint(-40, GamePanel.WIDTH + 40), Utilities.randint(-40, GamePanel.HEIGHT + 40), 0, new Vector2D(1, Math.toRadians(Utilities.randint(0, 360)))));
 		}
@@ -45,14 +47,20 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 		for (Asteroid a : asteroids) {
 			a.draw(g);
 		}
+
+		for(Debris d : debris) {
+			d.draw(g);
+		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e){
+		System.out.println(asteroids.toString());
         player.update(keys);
 		isShooting();
 		updateBullets();
 		updateAsteroids();
+		updateDebris();
 		repaint();
 	}
 	
@@ -105,13 +113,34 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 				bullets.remove(i);
 				continue;
 			}
-			bullets.get(i).update();
+			int collideIndex = bullets.get(i).update(asteroids);
+			if (collideIndex >= 0) {
+				bullets.remove(i);
+				if (asteroids.get(collideIndex).getchildNum() < 2) {
+					for (int j = 0; j < Utilities.randint(4, 6); j++) {
+						debris.add(new Debris(asteroids.get(collideIndex).getX(), asteroids.get(collideIndex).getY(), new Vector2D(1, Math.toRadians(Utilities.randint(0, 360))), Debris.DOT));
+					}
+					asteroids.add(new Asteroid(asteroids.get(collideIndex).getX(), asteroids.get(collideIndex).getY(), asteroids.get(collideIndex).getchildNum() + 1,  new Vector2D(1, Math.toRadians(Utilities.randint(0, 360)))));
+					asteroids.add(new Asteroid(asteroids.get(collideIndex).getX(), asteroids.get(collideIndex).getY(), asteroids.get(collideIndex).getchildNum() + 1,  new Vector2D(1, Math.toRadians(Utilities.randint(0, 360)))));
+				}
+				asteroids.remove(collideIndex);
+			}
 		}
 	}
 
 	private void updateAsteroids() {
 		for (int i = 0; i < asteroids.size(); i++) {
 			asteroids.get(i).move();
+		}
+	}
+
+	private void updateDebris() {
+		for (int i = 0; i < debris.size(); i++) {
+			if (debris.get(i).checkDead()) {
+				debris.remove(i);
+				continue;
+			}
+			debris.get(i).move();
 		}
 	}
 }

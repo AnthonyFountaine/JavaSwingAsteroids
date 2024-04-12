@@ -1,11 +1,13 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 public class Asteroid {
     private double x, y;
     private int childNum;
     private Vector2D dir;
     private int speed;
+    private final int WIDTH_HEIGHT = 60;
 
     public Asteroid(double x, double y, int childNum, Vector2D dir) {
         this.x = x;
@@ -39,6 +41,22 @@ public class Asteroid {
 
     public void draw(Graphics g) {
         g.setColor(Color.LIGHT_GRAY);
-        g.fillRect((int)x, (int)y, 40/(childNum + 1), 40/(childNum + 1));
+        g.fillRect((int)x, (int)y, WIDTH_HEIGHT/(childNum + 1), WIDTH_HEIGHT/(childNum + 1));
+    }
+
+    public Rectangle getRect() {
+        return new Rectangle((int)x, (int)y, WIDTH_HEIGHT/(childNum + 1), WIDTH_HEIGHT/(childNum + 1));
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public Vector2D getdir() {
+        return dir;
     }
 }

@@ -4,7 +4,7 @@ public class Main extends JFrame{
 	GamePanel game = new GamePanel();
 		
     public Main() {
-		super("Basic Game Setup");
+		super("Asteroids");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
 		add(game);
