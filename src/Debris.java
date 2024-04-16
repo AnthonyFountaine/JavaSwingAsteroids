@@ -30,11 +30,12 @@ public class Debris {
     }
 
     public void draw(Graphics g) {
-        g.setColor(Color.ORANGE);
         if (type == LINE) {
+            g.setColor(Color.WHITE);
             g.drawLine((int)x, (int)y, (int)(x + length * Math.cos(angle)), (int)(y + length * Math.sin(angle)));
         }
         else {
+            g.setColor(Color.ORANGE);
             g.fillOval((int) x, (int) y, 3, 3);
         }
     }

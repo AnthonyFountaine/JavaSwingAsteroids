@@ -1,6 +1,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.Polygon;
 import java.util.Arrays;
 
 public class Asteroid {
@@ -13,17 +13,18 @@ public class Asteroid {
     private final int[][] polygonYShapes = new int[][] {{1,1,0,1,5,6,8,9,10,10,8,7,4,4,1}, {2,2,0,2,3,6,7,9,11,9,9,8,5,2}, {1,2,0,1,0,2,4,6,7,8,10,8,9,8,5,3,1}, {1,1,0,1,3,6,9,8,10,10,9,6,4,1}};
     private final int[] polygonX, polygonY;
     private int randomshape;
+    private final int score;
  
     public Asteroid(double x, double y, int childNum, Vector2D dir) {
         this.x = x;
         this.y = y;
         this.childNum = childNum;
         this.dir = dir.copy();
-        this.speed = Utilities.randint(3, 6);
-        randomshape = Utilities.randint(0, polygonXShapes.length - 1);
+        this.speed = Utilities.randint(2, 4);
+        this.randomshape = Utilities.randint(0, polygonXShapes.length - 1);
         this.polygonX = Arrays.copyOf(polygonXShapes[randomshape], polygonXShapes[randomshape].length);
         this.polygonY = Arrays.copyOf(polygonYShapes[randomshape], polygonYShapes[randomshape].length);
-        
+        this.score = 600/(childNum + 1);
     }
 
     public int getchildNum() {
@@ -49,8 +50,8 @@ public class Asteroid {
     }
 
     public void draw(Graphics g) {
-        g.setColor(Color.LIGHT_GRAY);
-        g.drawPolygon(polygonX, polygonY, polygonX.length);
+        g.setColor(Color.PINK);
+        g.drawPolygon(getPolygon());
     }
 
     public void updatePolygon() {
@@ -60,13 +61,8 @@ public class Asteroid {
         }
     }
 
-    public Rectangle getRect() {
-        int[] xVals = Arrays.copyOf(polygonX, polygonX.length);
-        Arrays.sort(xVals);
-        int[] yVals = Arrays.copyOf(polygonY, polygonY.length);
-        Arrays.sort(yVals);
-
-        return new Rectangle(xVals[0], yVals[0], xVals[xVals.length - 1] - xVals[0], yVals[yVals.length - 1] - yVals[0]);
+    public Polygon getPolygon() {
+        return new Polygon(polygonX, polygonY, polygonX.length);
     }
 
     public double getX() {
@@ -84,5 +80,9 @@ public class Asteroid {
     public void update() {
         move();
         updatePolygon();
+    }
+
+    public int getScore() {
+        return score;
     }
 }

@@ -39,7 +39,7 @@ public class Bullet {
     public int checkAsteroids(ArrayList<Asteroid> asteroids) {
         Rectangle bRect = getRect();
         for (int i = 0; i < asteroids.size(); i++) {
-            if (bRect.intersects(asteroids.get(i).getRect())) {
+            if (asteroids.get(i).getPolygon().intersects(bRect)) {
                 return i;
             }
         }
@@ -59,6 +59,7 @@ public class Bullet {
         move();
         int collideIndex  = checkAsteroids(asteroids);
         if (collideIndex  >= 0) {
+            int score = asteroids.get(collideIndex).getScore();
             for (int j = 0; j < Utilities.randint(6, 8); j++) {
                 debris.add(new Debris(asteroids.get(collideIndex).getX(),
                 asteroids.get(collideIndex).getY(),new Vector2D(1, Math.toRadians(Utilities.randint(0, 360))), Debris.DOT));
@@ -72,7 +73,7 @@ public class Bullet {
                 }
             }
             asteroids.remove(collideIndex);
-            return DEAD;
+            return score;
         }
         return NO_ENEMIES_HIT;
     }

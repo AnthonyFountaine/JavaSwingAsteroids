@@ -1,7 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-
 import javax.swing.*;
 
 class GamePanel extends JPanel implements ActionListener, KeyListener, MouseListener{
@@ -14,6 +13,8 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 	ArrayList<Debris> debris;
 	int lastCalcedShots, shotsRemaining;
 	String gameState;
+	int score;
+	Font HyperSpaceBold = null;
 
     public GamePanel() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));	
@@ -31,11 +32,15 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 
 		lastCalcedShots = 0;
 		
+		score = 0;
+
 		timer = new Timer(20, this);
 		timer.start();
 
         keys = new boolean[1000];
 		gameState = "game";
+
+		HyperSpaceBold = new Font("HyperSpace", Font.BOLD, 30);
 	}
 
 	public void paint(Graphics g){
@@ -53,6 +58,13 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 	
 			for(Debris d : debris) {
 				d.draw(g);
+			}
+
+			g.setFont(HyperSpaceBold);
+			g.setColor(Color.WHITE);
+			g.drawString(""+score, 50, 50);
+			for (int i = 0; i < player.getLives(); i++) {
+				continue;
 			}
 		}
 	}
@@ -102,7 +114,7 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 			lastCalcedShots = player.canShoot(lastCalcedShots, keys);
 			shotsRemaining = lastCalcedShots > 0 ? shotsRemaining + lastCalcedShots : shotsRemaining;
 			if (lastCalcedShots > 0) {
-				player.shootCooldown = 10;
+				player.shootCooldown = 15;
 			}
 		}
 
@@ -114,8 +126,12 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 
 	private void updateBullets() {
 		for (int i = 0; i < bullets.size(); i++) {
-			int state = bullets.get(i).update(asteroids, debris);
-			if (state == Bullet.DEAD) {
+			int status = bullets.get(i).update(asteroids, debris);
+			if (status > 0) {
+				bullets.remove(i);
+				score += status;
+			}
+			if (status == Bullet.DEAD) {
 				bullets.remove(i);
 			}
 		}

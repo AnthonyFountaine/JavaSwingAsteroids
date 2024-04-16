@@ -1,7 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Area;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Player {
     private double x, y;
@@ -12,6 +12,7 @@ public class Player {
     private boolean thrust = false;
     private int invulnerableTime, deadPauseTime;
     public int shootCooldown;
+    private int lives;
 
     public Player() {
         this.x = GamePanel.WIDTH/2;
@@ -23,6 +24,7 @@ public class Player {
         this.invulnerableTime = 40;
         this.polygonX = new int[6];
         this.polygonY = new int[6];
+        this.lives = 3;
     }
 
     public void move(boolean[] keys) {
@@ -104,12 +106,11 @@ public class Player {
         rotate(keys);
         move(keys);
         updatePolygon();
-        int collideIndex;
         if (invulnerableTime > 0) {
             invulnerableTime--;
-            collideIndex = -1;
+            return;
         }
-        collideIndex = checkAsteroids(asteroids);
+        int collideIndex = checkAsteroids(asteroids);
         if (collideIndex >= 0) {
             for (int j = 0; j < Utilities.randint(6, 8); j++) {
                 debris.add(new Debris(asteroids.get(collideIndex).getX(),
@@ -156,19 +157,16 @@ public class Player {
         return 1;
     }
 
-    public Rectangle getRect() {
-        int[] xVals = Arrays.copyOf(polygonX, polygonX.length);
-        Arrays.sort(xVals);
-        int[] yVals = Arrays.copyOf(polygonY, polygonY.length);
-        Arrays.sort(yVals);
-
-        return new Rectangle(xVals[0], yVals[0], xVals[xVals.length - 1] - xVals[0], yVals[yVals.length - 1] - yVals[0]);
+    public Polygon getPolygon() {
+        return new Polygon(polygonX, polygonY, polygonX.length);
     }
 
     public int checkAsteroids(ArrayList<Asteroid> asteroids) {
-        Rectangle pRect = getRect();
+        Polygon pPoly = getPolygon();
         for (int i = 0; i < asteroids.size(); i++) {
-            if (pRect.intersects(asteroids.get(i).getRect())) {
+            Area intersectArea = new Area(pPoly);
+            intersectArea.intersect(new Area(asteroids.get(i).getPolygon()));
+            if (!intersectArea.isEmpty()) {
                 return i;
             }
         }
@@ -181,5 +179,9 @@ public class Player {
         this.y = GamePanel.HEIGHT / 2;
         this.xVelo = 0;
         this.yVelo = 0;
+    }
+
+    public int getLives() {
+        return lives;
     }
 }
