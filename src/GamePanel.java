@@ -15,6 +15,7 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 	String gameState;
 	int score;
 	Font HyperSpaceBold = null;
+	Image introImage;
 
     public GamePanel() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));	
@@ -38,12 +39,17 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 		timer.start();
 
         keys = new boolean[1000];
-		gameState = "game";
+		gameState = "intro";
 
 		HyperSpaceBold = new Font("HyperSpace", Font.BOLD, 30);
+
+		introImage = Utilities.loadImage("assets/intro.png");
 	}
 
 	public void paint(Graphics g){
+		if (gameState == "intro") {
+			g.drawImage(introImage, 0, 0, null);
+		}
 		if (gameState == "game") {
 			g.setColor(Color.BLACK);
 			g.fillRect(0,0,getWidth(),getHeight());
@@ -71,7 +77,15 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 
 	@Override
 	public void actionPerformed(ActionEvent e){
+		if (gameState == "intro") {
+			if (keys[KeyEvent.VK_ENTER]) {
+				gameState = "game";
+			}
+		}
 		if (gameState == "game") {
+			if (checkGameOver()) {
+				return;
+			}
 			player.update(keys, asteroids, debris);
 			isShooting();
 			updateBullets();
@@ -95,7 +109,11 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 	public void	keyTyped(KeyEvent e){}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {}
+	public void mouseClicked(MouseEvent e) {
+		if (gameState == "intro") {
+			gameState = "game";
+		}
+	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {}
@@ -152,4 +170,11 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 		}
 	}
 	
+	private boolean checkGameOver() {
+		if (player.getLives() == 0) {
+			gameState = "gameover";
+			return true;
+		}
+		return false;
+	}
 }

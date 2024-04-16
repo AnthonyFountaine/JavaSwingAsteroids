@@ -50,7 +50,7 @@ public class Asteroid {
     }
 
     public void draw(Graphics g) {
-        g.setColor(Color.PINK);
+        g.setColor(Color.MAGENTA);
         g.drawPolygon(getPolygon());
     }
 

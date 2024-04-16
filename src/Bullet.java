@@ -48,7 +48,7 @@ public class Bullet {
     }
 
     public void draw(Graphics g) {
-        g.setColor(Color.YELLOW);
+        g.setColor(Color.GREEN);
         g.fillOval((int)x, (int)y, 4, 4);
     }
 

@@ -112,26 +112,8 @@ public class Player {
         }
         int collideIndex = checkAsteroids(asteroids);
         if (collideIndex >= 0) {
-            for (int j = 0; j < Utilities.randint(6, 8); j++) {
-                debris.add(new Debris(asteroids.get(collideIndex).getX(),
-                asteroids.get(collideIndex).getY(),new Vector2D(1, Math.toRadians(Utilities.randint(0, 360))), Debris.DOT));
-            }
-            for (int j = 0; j < 4; j++) {
-                debris.add(new Debris(asteroids.get(collideIndex).getX(),
-                asteroids.get(collideIndex).getY(),new Vector2D(1, Math.toRadians(Utilities.randint(0, 360))), Debris.LINE));
-            }
-            if (asteroids.get(collideIndex).getchildNum() < 2) {
-                for (int i = 0; i < 2; i++) {
-                    asteroids.add(new Asteroid(asteroids.get(collideIndex).getX() + Utilities.randint(-5, 5),
-                    asteroids.get(collideIndex).getY() + Utilities.randint(-5, 5),
-                    asteroids.get(collideIndex).getchildNum() + 1,
-                    new Vector2D(1, Math.toRadians(Utilities.randint(0, 360)))));
-                }
-            }
-            asteroids.remove(collideIndex);
-            deadPauseTime = 5;
-            invulnerableTime = 45;
-            deadReset();
+            newObjects(collideIndex, asteroids, debris);
+            newLife();
         }
     }
 
@@ -183,5 +165,32 @@ public class Player {
 
     public int getLives() {
         return lives;
+    }
+
+    private void newObjects(int collideIndex, ArrayList<Asteroid> asteroids, ArrayList<Debris> debris) {
+        for (int j = 0; j < Utilities.randint(6, 8); j++) {
+            debris.add(new Debris(asteroids.get(collideIndex).getX(),
+            asteroids.get(collideIndex).getY(),new Vector2D(1, Math.toRadians(Utilities.randint(0, 360))), Debris.DOT));
+        }
+        for (int j = 0; j < 4; j++) {
+            debris.add(new Debris(asteroids.get(collideIndex).getX(),
+            asteroids.get(collideIndex).getY(),new Vector2D(1, Math.toRadians(Utilities.randint(0, 360))), Debris.LINE));
+        }
+        if (asteroids.get(collideIndex).getchildNum() < 2) {
+            for (int i = 0; i < 2; i++) {
+                asteroids.add(new Asteroid(asteroids.get(collideIndex).getX() + Utilities.randint(-5, 5),
+                asteroids.get(collideIndex).getY() + Utilities.randint(-5, 5),
+                asteroids.get(collideIndex).getchildNum() + 1,
+                new Vector2D(1, Math.toRadians(Utilities.randint(0, 360)))));
+            }
+        }
+        asteroids.remove(collideIndex);
+    }
+
+    private void newLife() {
+        lives--;
+        deadPauseTime = 5;
+        invulnerableTime = 45;
+        deadReset();
     }
 }
