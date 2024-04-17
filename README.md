@@ -31,10 +31,6 @@ To run this project, you need to have Java Development Kit (JDK) installed on yo
 - Use "WAD" to move the spaceship.
 - Press the spacebar to shoot bullets.
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
-
 ## Acknowledgements
 
 - The original Asteroids game was developed by Atari, Inc. in 1979.
