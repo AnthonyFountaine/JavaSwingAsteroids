@@ -7,7 +7,7 @@ public class Bullet {
     private double x, y;
     private Vector2D dir;
     private int timeOnScreen;
-    private final int SPEED = 20;
+    private final int SPEED = 15;
     public final static int DEAD = -2, NO_ENEMIES_HIT = -1;
 
     public Bullet(double x, double y, Vector2D dir) {

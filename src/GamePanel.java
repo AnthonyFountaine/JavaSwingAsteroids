@@ -37,26 +37,26 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 		
 		score = 0;
 
-		timer = new Timer(20, this);
+		timer = new Timer(15, this);
 		timer.start();
 
         keys = new boolean[1000];
 		gameState = "intro";
 
-		HyperSpaceBold = new Font("HyperSpace", Font.BOLD, 30);
-		HyperSpaceBoldBig = new Font("HyperSpace", Font.BOLD, 50);
+		HyperSpaceBold = Utilities.loadFont("assets/HyperSpaceBold.ttf", 30);
+		HyperSpaceBoldBig = Utilities.loadFont("assets/HyperSpaceBold.ttf", 50);
 
 		introImage = Utilities.loadImage("assets/intro.png");
 	}
 
 	public void paint(Graphics g){
-		if (gameState == "intro") {
+		if (gameState.equals("intro")) {
 			g.setColor(Color.YELLOW);
 			g.drawImage(introImage, 0, 0, null);
 			g.setFont(HyperSpaceBoldBig);
 			g.drawString("Press Enter", 225, 550);
 		}
-		if (gameState == "game") {
+		if (gameState.equals("game")) {
 			g.setColor(Color.BLACK);
 			g.fillRect(0,0,getWidth(),getHeight());
 			player.draw(g);
@@ -81,7 +81,7 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 			}
 		}
 
-		if (gameState == "gameover") {
+		if (gameState.equals("gameover")) {
 			g.setColor(Color.BLACK);
 			g.fillRect(0,0,getWidth(),getHeight());
 			g.setFont(HyperSpaceBold);
@@ -94,27 +94,27 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 
 	@Override
 	public void actionPerformed(ActionEvent e){
-		if (gameState == "intro") {
+		if (gameState.equals("intro")) {
 			System.out.println("good work");
 			if (keys[KeyEvent.VK_ENTER]) {
 				gameState = "game";
 			}
 		}
-		if (gameState == "game") {
+		if (gameState.equals("game")) {
 			player.update(keys, asteroids, debris);
-			ufo.update();
+			ufo.update(asteroids, debris);
 			isShooting();
 			updateBullets();
 			updateAsteroids();
 			updateDebris();
-			repaint();
 			checkGameOver();
 		}
-		if (gameState ==  "gameover") {
+		if (gameState.equals("gameover")) {
 			if (keys[KeyEvent.VK_ENTER]) {
 				gameState = "intro";
 			}
 		}
+		repaint();
 	}
 	
 	@Override

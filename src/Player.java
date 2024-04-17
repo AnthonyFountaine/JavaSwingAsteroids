@@ -7,7 +7,7 @@ public class Player {
     private double x, y;
     private double xVelo, yVelo;
     private Vector2D dir;
-    private final double FRICTION_CONSTANT = 0.95, ROTATIONAL_CONSTANT = 9;
+    private final double FRICTION_CONSTANT = 0.95, ROTATIONAL_CONSTANT = 5;
     private int[] polygonX, polygonY;
     private boolean thrust = false;
     private int invulnerableTime, deadPauseTime;
@@ -51,8 +51,8 @@ public class Player {
 
         if (keys[KeyEvent.VK_W]) {
             thrust = !thrust;
-            xVelo += dir.getxComp()/2;
-            yVelo += dir.getyComp()/2;
+            xVelo += dir.getxComp()/3;
+            yVelo += dir.getyComp()/3;
         }
         else {
             thrust = false;

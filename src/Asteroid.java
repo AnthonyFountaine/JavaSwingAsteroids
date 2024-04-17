@@ -20,7 +20,7 @@ public class Asteroid {
         this.y = y;
         this.childNum = childNum;
         this.dir = dir.copy();
-        this.speed = Utilities.randint(2, 4);
+        this.speed = Utilities.randint(1, 2);
         this.randomshape = Utilities.randint(0, polygonXShapes.length - 1);
         this.polygonX = Arrays.copyOf(polygonXShapes[randomshape], polygonXShapes[randomshape].length);
         this.polygonY = Arrays.copyOf(polygonYShapes[randomshape], polygonYShapes[randomshape].length);
