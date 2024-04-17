@@ -28,7 +28,7 @@ To run this project, you need to have Java Development Kit (JDK) installed on yo
 
 ## Controls
 
-- Use the WAD to move the spaceship.
+- Use "WAD" to move the spaceship.
 - Press the spacebar to shoot bullets.
 
 ## License

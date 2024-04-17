@@ -11,10 +11,11 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 	ArrayList<Bullet> bullets;
 	ArrayList<Asteroid> asteroids;
 	ArrayList<Debris> debris;
+	UFO ufo;
 	int lastCalcedShots, shotsRemaining;
 	String gameState;
 	int score;
-	Font HyperSpaceBold = null;
+	Font HyperSpaceBold = null, HyperSpaceBoldBig = null;
 	Image introImage;
 
     public GamePanel() {
@@ -27,6 +28,7 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 		bullets = new ArrayList<Bullet>();
 		asteroids = new ArrayList<Asteroid>();
 		debris = new ArrayList<Debris>();
+		ufo = new UFO(WIDTH/2, HEIGHT/2);
 		for (int i = 0; i < 5; i++) {
 			asteroids.add(new Asteroid(Utilities.randint(-40, GamePanel.WIDTH + 40), Utilities.randint(-40, GamePanel.HEIGHT + 40), 0, new Vector2D(1, Math.toRadians(Utilities.randint(0, 360)))));
 		}
@@ -42,18 +44,23 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 		gameState = "intro";
 
 		HyperSpaceBold = new Font("HyperSpace", Font.BOLD, 30);
+		HyperSpaceBoldBig = new Font("HyperSpace", Font.BOLD, 50);
 
 		introImage = Utilities.loadImage("assets/intro.png");
 	}
 
 	public void paint(Graphics g){
 		if (gameState == "intro") {
+			g.setColor(Color.YELLOW);
 			g.drawImage(introImage, 0, 0, null);
+			g.setFont(HyperSpaceBoldBig);
+			g.drawString("Press Enter", 225, 550);
 		}
 		if (gameState == "game") {
 			g.setColor(Color.BLACK);
 			g.fillRect(0,0,getWidth(),getHeight());
 			player.draw(g);
+			ufo.draw(g);
 			for (Bullet b : bullets) {
 				b.draw(g);
 			}
@@ -73,25 +80,40 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 				continue;
 			}
 		}
+
+		if (gameState == "gameover") {
+			g.setColor(Color.BLACK);
+			g.fillRect(0,0,getWidth(),getHeight());
+			g.setFont(HyperSpaceBold);
+			g.setColor(Color.WHITE);
+			g.drawString("Game Over", 300, 200);
+			g.drawString("Score: " + score, 300, 250);
+			// g.drawString("Press Enter to return to Home Screen" + score, 300, 300);
+		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e){
 		if (gameState == "intro") {
+			System.out.println("good work");
 			if (keys[KeyEvent.VK_ENTER]) {
 				gameState = "game";
 			}
 		}
 		if (gameState == "game") {
-			if (checkGameOver()) {
-				return;
-			}
 			player.update(keys, asteroids, debris);
+			ufo.update();
 			isShooting();
 			updateBullets();
 			updateAsteroids();
 			updateDebris();
 			repaint();
+			checkGameOver();
+		}
+		if (gameState ==  "gameover") {
+			if (keys[KeyEvent.VK_ENTER]) {
+				gameState = "intro";
+			}
 		}
 	}
 	
@@ -110,9 +132,6 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if (gameState == "intro") {
-			gameState = "game";
-		}
 	}
 
 	@Override
@@ -170,11 +189,9 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 		}
 	}
 	
-	private boolean checkGameOver() {
+	private void checkGameOver() {
 		if (player.getLives() == 0) {
 			gameState = "gameover";
-			return true;
 		}
-		return false;
 	}
 }
