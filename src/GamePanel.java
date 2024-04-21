@@ -12,10 +12,12 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 	ArrayList<Asteroid> asteroids;
 	ArrayList<Debris> debris;
 	UFO ufo;
-	int lastCalcedShots, shotsRemaining;
+	int lastCalcedShots, shotsRemaining, shotSpawnDelay;
 	String gameState;
 	int score;
-	Font HyperSpaceBold = null, HyperSpaceBoldBig = null;
+	int level;
+	int newLevelDelay;
+	Font arcadeClassic = null, arcadeClassicBig = null;
 	Image introImage;
 
     public GamePanel() {
@@ -24,28 +26,16 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 		requestFocus();
 		addKeyListener(this);
 		addMouseListener(this);
-        player = new Player();
-		bullets = new ArrayList<Bullet>();
-		asteroids = new ArrayList<Asteroid>();
-		debris = new ArrayList<Debris>();
-		ufo = new UFO(WIDTH/2, HEIGHT/2);
-		for (int i = 0; i < 5; i++) {
-			asteroids.add(new Asteroid(Utilities.randint(-40, GamePanel.WIDTH + 40), Utilities.randint(-40, GamePanel.HEIGHT + 40), 0, new Vector2D(1, Math.toRadians(Utilities.randint(0, 360)))));
-		}
-
-		lastCalcedShots = 0;
-		
-		score = 0;
-
+        
 		timer = new Timer(15, this);
 		timer.start();
 
         keys = new boolean[1000];
 		gameState = "intro";
-
-		HyperSpaceBold = Utilities.loadFont("assets/HyperSpaceBold.ttf", 30);
-		HyperSpaceBoldBig = Utilities.loadFont("assets/HyperSpaceBold.ttf", 50);
-
+		
+		arcadeClassic = Utilities.loadFont("assets/ARCADECLASSIC.ttf", 30);
+		arcadeClassicBig = Utilities.loadFont("assets/ARCADECLASSIC.ttf", 50);
+		
 		introImage = Utilities.loadImage("assets/intro.png");
 	}
 
@@ -53,14 +43,16 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 		if (gameState.equals("intro")) {
 			g.setColor(Color.YELLOW);
 			g.drawImage(introImage, 0, 0, null);
-			g.setFont(HyperSpaceBoldBig);
+			g.setFont(arcadeClassicBig);
 			g.drawString("Press Enter", 225, 550);
 		}
 		if (gameState.equals("game")) {
 			g.setColor(Color.BLACK);
 			g.fillRect(0,0,getWidth(),getHeight());
 			player.draw(g);
-			ufo.draw(g);
+			if (ufo != null) {
+				ufo.draw(g);
+			}
 			for (Bullet b : bullets) {
 				b.draw(g);
 			}
@@ -73,46 +65,49 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 				d.draw(g);
 			}
 
-			g.setFont(HyperSpaceBold);
+			g.setFont(arcadeClassic);
 			g.setColor(Color.WHITE);
-			g.drawString(""+score, 50, 50);
-			for (int i = 0; i < player.getLives(); i++) {
-				continue;
+			g.drawString("SCORE   "+score + "     LEVEL   " + level + "     ASTEROIDS   " + asteroids.size(), 50, 50);
+			if (newLevelDelay > 0) {
+				g.drawString("LEVEL COMPLETE! ", 350, 300);
+			}
+
+			g.translate(50, GamePanel.HEIGHT - 50);
+			for (int i = 0; i < player.getLives() - 1; i++) {
+				g.drawPolygon(player.playerShape[0], player.playerShape[1], player.playerShape[0].length);
+				g.translate(50, 0);
 			}
 		}
 
 		if (gameState.equals("gameover")) {
 			g.setColor(Color.BLACK);
 			g.fillRect(0,0,getWidth(),getHeight());
-			g.setFont(HyperSpaceBold);
+			g.setFont(arcadeClassic);
 			g.setColor(Color.WHITE);
 			g.drawString("Game Over", 300, 200);
 			g.drawString("Score: " + score, 300, 250);
-			// g.drawString("Press Enter to return to Home Screen" + score, 300, 300);
 		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e){
 		if (gameState.equals("intro")) {
-			System.out.println("good work");
-			if (keys[KeyEvent.VK_ENTER]) {
-				gameState = "game";
-			}
 		}
 		if (gameState.equals("game")) {
 			player.update(keys, asteroids, debris);
-			ufo.update(asteroids, debris);
+			if (ufo != null) {
+				if (ufo.update(asteroids, debris, bullets, player) == UFO.DEAD) {
+					ufo = null;
+				}
+			}
 			isShooting();
 			updateBullets();
 			updateAsteroids();
 			updateDebris();
 			checkGameOver();
+			checkLevel();
 		}
 		if (gameState.equals("gameover")) {
-			if (keys[KeyEvent.VK_ENTER]) {
-				gameState = "intro";
-			}
 		}
 		repaint();
 	}
@@ -135,7 +130,20 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {}
+	public void mousePressed(MouseEvent e) {
+		if (gameState.equals("intro")) {
+			startnewGame();
+			gameState = "game";
+		}
+
+		if (gameState.equals("game")) {
+			startnewGame();
+		}
+
+		if (gameState.equals("gameover")) {
+			gameState = "intro";
+		}
+	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {}
@@ -147,6 +155,7 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 	public void mouseExited(MouseEvent e) {}
 
 	private void isShooting() {
+		shotSpawnDelay--;
 		if (keys[KeyEvent.VK_SPACE] && player.canShoot(lastCalcedShots, keys) > 0) {
 			lastCalcedShots = player.canShoot(lastCalcedShots, keys);
 			shotsRemaining = lastCalcedShots > 0 ? shotsRemaining + lastCalcedShots : shotsRemaining;
@@ -155,18 +164,22 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 			}
 		}
 
-		if (shotsRemaining > 0) {
-			bullets.add(new Bullet(player.getX(), player.getY(), player.getdir()));
+		if (shotsRemaining > 0 && shotSpawnDelay <= 0) {
+			bullets.add(new Bullet(player.getX(), player.getY(), player.getdir(), "Player"));
 			shotsRemaining--;
+			shotSpawnDelay = 3;
 		}
 	}
 
 	private void updateBullets() {
 		for (int i = 0; i < bullets.size(); i++) {
-			int status = bullets.get(i).update(asteroids, debris);
+			int status = bullets.get(i).update(asteroids, debris, player, ufo);
 			if (status > 0) {
 				bullets.remove(i);
 				score += status;
+				if (status == 1000) {
+					ufo = null;
+				}
 			}
 			if (status == Bullet.DEAD) {
 				bullets.remove(i);
@@ -192,6 +205,46 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 	private void checkGameOver() {
 		if (player.getLives() == 0) {
 			gameState = "gameover";
+		}	
+	}
+
+	private void checkLevel() {
+		if (asteroids.size() == 0) {
+			newLevelDelay++;
+			if (newLevelDelay > 100) {
+				newLevel();
+				newLevelDelay = 0;
+			}
 		}
+	}
+
+	private void newLevel() {
+		level++;
+		if (level == 1) {
+			player = new Player(WIDTH/2, HEIGHT/2, 3);
+		}
+		else {
+			player = new Player(WIDTH/2, HEIGHT/2, player.getLives() + 1);
+		}
+		if (level%3 == 0) {
+			ufo = new UFO(UFO.randomSpawnLocation("x"), UFO.randomSpawnLocation("y"));
+		}
+		for (int i = 0; i < 5 + (int)(level/5); i++) {
+			asteroids.add(new Asteroid(Asteroid.randomSpawnLocation("x"), Asteroid.randomSpawnLocation("y"), 0, new Vector2D(1, Math.toRadians(Utilities.randint(0, 360))), level));
+		}
+	}
+
+	private void startnewGame() {
+		bullets = new ArrayList<Bullet>();
+		asteroids = new ArrayList<Asteroid>();
+		debris = new ArrayList<Debris>();
+
+		lastCalcedShots = 0;
+		shotSpawnDelay = 0;
+		
+		score = 0;
+		level = 0;
+
+		newLevel();
 	}
 }

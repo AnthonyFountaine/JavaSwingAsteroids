@@ -7,16 +7,18 @@ public class Player {
     private double x, y;
     private double xVelo, yVelo;
     private Vector2D dir;
-    private final double FRICTION_CONSTANT = 0.95, ROTATIONAL_CONSTANT = 5;
+    private final double FRICTION_CONSTANT = 0.95, ROTATIONAL_CONSTANT = 4.5;
     private int[] polygonX, polygonY;
     private boolean thrust = false;
     private int invulnerableTime, deadPauseTime;
     public int shootCooldown;
     private int lives;
+    public final int[][] playerShape = new int[][] {new int[] {0, (int)(30 * -Math.cos(-Math.PI/2 -.3)), (int)(30 * -Math.cos(-Math.PI/2 - .3)) * 3/4, (int)(30 * -Math.cos(-Math.PI/2 + .3)) * 3/4, (int)(30 * -Math.cos(-Math.PI/2 + .3)), 0}, 
+                                                           new int[] {0, (int)(30 * -Math.sin(-Math.PI/2 - .3)), (int)(30 * -Math.sin(-Math.PI/2 - .3)) * 3/4, (int)(30 * -Math.sin(-Math.PI/2 +.3)) * 3/4, (int)(30 * -Math.sin(-Math.PI/2 +.3)), 0}};
 
-    public Player() {
-        this.x = GamePanel.WIDTH/2;
-        this.y = GamePanel.HEIGHT/2;
+    public Player(int x, int y, int lives) {
+        this.x = x;
+        this.y = y;
         this.dir = new Vector2D(1, Math.toRadians(90));
         this.xVelo = 0;
         this.yVelo = 0;
@@ -24,7 +26,7 @@ public class Player {
         this.invulnerableTime = 40;
         this.polygonX = new int[6];
         this.polygonY = new int[6];
-        this.lives = 3;
+        this.lives = lives;
     }
 
     public void move(boolean[] keys) {
@@ -51,8 +53,8 @@ public class Player {
 
         if (keys[KeyEvent.VK_W]) {
             thrust = !thrust;
-            xVelo += dir.getxComp()/3;
-            yVelo += dir.getyComp()/3;
+            xVelo += dir.getxComp()/4;
+            yVelo += dir.getyComp()/4;
         }
         else {
             thrust = false;
@@ -112,7 +114,7 @@ public class Player {
         }
         int collideIndex = checkAsteroids(asteroids);
         if (collideIndex >= 0) {
-            newObjects(collideIndex, asteroids, debris);
+            newAsteroids(collideIndex, asteroids, debris);
             newLife();
         }
     }
@@ -167,27 +169,31 @@ public class Player {
         return lives;
     }
 
-    private void newObjects(int collideIndex, ArrayList<Asteroid> asteroids, ArrayList<Debris> debris) {
+    private void newAsteroids(int collideIndex, ArrayList<Asteroid> asteroids, ArrayList<Debris> debris) {
         for (int j = 0; j < Utilities.randint(6, 8); j++) {
             debris.add(new Debris(asteroids.get(collideIndex).getX(),
-            asteroids.get(collideIndex).getY(),new Vector2D(1, Math.toRadians(Utilities.randint(0, 360))), Debris.DOT));
+            asteroids.get(collideIndex).getY(),
+            new Vector2D(1, Math.toRadians(Utilities.randint(0, 360))), 
+            Debris.DOT));
         }
         for (int j = 0; j < 4; j++) {
             debris.add(new Debris(asteroids.get(collideIndex).getX(),
-            asteroids.get(collideIndex).getY(),new Vector2D(1, Math.toRadians(Utilities.randint(0, 360))), Debris.LINE));
+            asteroids.get(collideIndex).getY(),
+            new Vector2D(1, Math.toRadians(Utilities.randint(0, 360))), 
+            Debris.LINE));
         }
         if (asteroids.get(collideIndex).getchildNum() < 2) {
             for (int i = 0; i < 2; i++) {
                 asteroids.add(new Asteroid(asteroids.get(collideIndex).getX() + Utilities.randint(-5, 5),
                 asteroids.get(collideIndex).getY() + Utilities.randint(-5, 5),
                 asteroids.get(collideIndex).getchildNum() + 1,
-                new Vector2D(1, Math.toRadians(Utilities.randint(0, 360)))));
+                new Vector2D(1, Math.toRadians(Utilities.randint(0, 360))), asteroids.get(collideIndex).getLevel()));
             }
         }
         asteroids.remove(collideIndex);
     }
 
-    private void newLife() {
+    public void newLife() {
         lives--;
         deadPauseTime = 5;
         invulnerableTime = 45;

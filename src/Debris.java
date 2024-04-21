@@ -8,7 +8,7 @@ public class Debris {
     private double length, angle;
     private int speed;
     private int timeOnScreen;
-    public final static int LINE = 1, DOT = 2;
+    public final static int LINE = 1, DOT = 2, ARC = 3;
     public final static int DEAD = -2, NULL = -1;
 
 
@@ -34,7 +34,11 @@ public class Debris {
             g.setColor(Color.WHITE);
             g.drawLine((int)x, (int)y, (int)(x + length * Math.cos(angle)), (int)(y + length * Math.sin(angle)));
         }
-        else {
+        else if(type == ARC) {
+            g.setColor(Color.CYAN);
+            g.drawArc((int)x, (int)y, 20, 20, (int)(Math.toDegrees(angle)), 75);
+        }
+        else{
             g.setColor(Color.ORANGE);
             g.fillOval((int) x, (int) y, 3, 3);
         }

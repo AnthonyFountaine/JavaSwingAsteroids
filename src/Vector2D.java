@@ -68,6 +68,6 @@ public class Vector2D {
     }
 
     public Vector2D copy() {
-        return new Vector2D(getMagnitude(), getAngle());
+        return new Vector2D(new double[] {xComp, yComp});
     }
 }

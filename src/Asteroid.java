@@ -1,6 +1,8 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.util.Arrays;
 
 public class Asteroid {
@@ -14,13 +16,15 @@ public class Asteroid {
     private final int[] polygonX, polygonY;
     private int randomshape;
     private final int score;
+    private int level;
  
-    public Asteroid(double x, double y, int childNum, Vector2D dir) {
+    public Asteroid(double x, double y, int childNum, Vector2D dir, int level) {
         this.x = x;
         this.y = y;
         this.childNum = childNum;
         this.dir = dir.copy();
-        this.speed = Utilities.randint(1, 2);
+        this.level = level;
+        this.speed = Utilities.randint(1, 2) * this.level/10 + 1;
         this.randomshape = Utilities.randint(0, polygonXShapes.length - 1);
         this.polygonX = Arrays.copyOf(polygonXShapes[randomshape], polygonXShapes[randomshape].length);
         this.polygonY = Arrays.copyOf(polygonYShapes[randomshape], polygonYShapes[randomshape].length);
@@ -35,17 +39,17 @@ public class Asteroid {
         x += dir.getxComp() * speed;
         y += dir.getyComp() * speed;
 
-        if (x < -40) {
-            x = GamePanel.WIDTH + 40;
+        if (x < -40 + WIDTH_HEIGHT * (childNum + 1)) {
+            x = GamePanel.WIDTH + 40 - WIDTH_HEIGHT * (childNum + 1);
         }
-        else if (x > GamePanel.WIDTH + 40) {
-            x = -40;
+        else if (x > GamePanel.WIDTH + 40 - WIDTH_HEIGHT * (childNum + 1)) {
+            x = -40  + WIDTH_HEIGHT * (childNum + 1);
         }
-        if (y < -40) {
-            y = GamePanel.HEIGHT + 40;
+        if (y < -40 + WIDTH_HEIGHT * (childNum + 1)) {
+            y = GamePanel.HEIGHT + 40 - WIDTH_HEIGHT * (childNum + 1);
         }
-        else if (y > GamePanel.HEIGHT + 40) {
-            y = -40;
+        else if (y > GamePanel.HEIGHT + 40 - WIDTH_HEIGHT * (childNum + 1)) {
+            y = -40 + WIDTH_HEIGHT * (childNum + 1);
         }
     }
 
@@ -84,5 +88,36 @@ public class Asteroid {
 
     public int getScore() {
         return score;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public static int randomSpawnLocation(String type) {
+        int randomLocation;
+        if (type == "x") {
+            randomLocation = GamePanel.WIDTH/2;
+            while (true) {
+                if (new Rectangle(GamePanel.WIDTH/2 - 50, GamePanel.HEIGHT/2 - 50, 100, 100).contains(new Point(randomLocation, GamePanel.HEIGHT/2))) {
+                    randomLocation = Utilities.randint(-40, GamePanel.WIDTH + 40);
+                }
+                else{
+                    break;
+                }
+            }
+        }
+        else{
+            randomLocation = GamePanel.HEIGHT/2;
+            while (true) {
+                if (new Rectangle(GamePanel.WIDTH/2 - 50, GamePanel.HEIGHT/2 - 50, 100, 100).contains(new Point(GamePanel.WIDTH/2, randomLocation))) {
+                    randomLocation = Utilities.randint(-40, GamePanel.HEIGHT + 40);
+                }
+                else{
+                    break;
+                }
+            }
+        }
+        return randomLocation;
     }
 }
