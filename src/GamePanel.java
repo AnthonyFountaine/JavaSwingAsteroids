@@ -17,7 +17,7 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 	int score;
 	int level;
 	int newLevelDelay;
-	Font arcadeClassic = null, arcadeClassicBig = null;
+	Font atarian = null, atarianBig = null;
 	Image introImage;
 	
     public GamePanel() {
@@ -33,8 +33,8 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
         keys = new boolean[1000];
 		gameState = "intro";
 		
-		arcadeClassic = Utilities.loadFont("assets/arcadeClassic.ttf", 30);
-		arcadeClassicBig = Utilities.loadFont("assets/arcadeClassic.ttf", 50);
+		atarian = Utilities.loadFont("assets/Atarian.ttf", 30);
+		atarianBig = Utilities.loadFont("assets/Atarian.ttf", 50);
 		
 		introImage = Utilities.loadImage("assets/intro.png");
 	}
@@ -43,8 +43,8 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 		if (gameState.equals("intro")) {
 			g.setColor(Color.GREEN);
 			g.drawImage(introImage, 0, 0, null);
-			g.setFont(arcadeClassicBig);
-			g.drawString("CLICK TO START GAME", 125, 575);
+			g.setFont(atarianBig);
+			g.drawString("CLICK TO START GAME", 200, 575);
 		}
 		if (gameState.equals("game")) {
 			g.setColor(Color.BLACK);
@@ -65,30 +65,35 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 				d.draw(g);
 			}
 			
-			g.setFont(arcadeClassic);
+			g.setFont(atarian);
 			g.setColor(Color.WHITE);
-			g.drawString("SCORE   "+score + "     LEVEL   " + level + "     ASTEROIDS   " + asteroids.size(), 50, 50);
+			g.drawString("SCORE  "+score + "    LEVEL  " + level + "    ASTEROIDS  " + asteroids.size(), 50, 50);
+
 			if (newLevelDelay > 0) {
-				g.drawString("LEVEL COMPLETE!", 275, 325);
+				g.setColor(Utilities.randomColor());
+				g.drawString("LEVEL COMPLETE!", 305, 325);
 			}
 			
+
+			g.setColor(Color.WHITE);
 			g.translate(50, GamePanel.HEIGHT - 50);
 			for (int i = 0; i < player.getLives() - 1; i++) {
 				g.drawPolygon(player.playerShape[0], player.playerShape[1], player.playerShape[0].length);
 				g.translate(50, 0);
 			}
+			
 		}
 		
 		if (gameState.equals("gameover")) {
 			g.setColor(Color.BLACK);
 			g.fillRect(0,0,getWidth(),getHeight());
-			g.setFont(arcadeClassicBig);
+			g.setFont(atarianBig);
 			g.setColor(Color.WHITE);
 			g.drawLine(WIDTH/2, 0, WIDTH/2, HEIGHT);
-			g.drawString("GAMEOVER", 275, 275);
-			g.drawString("SCORE: " + score, 290, 325);
-			g.drawString("ENTER TO RETURN HOME", 105, 525);
-			g.drawString("CLICK TO RESTART GAME", 110, 575);
+			g.drawString("GAME OVER", 298, 275);
+			g.drawString("SCORE: " + score, 320, 325);
+			g.drawString("ENTER TO RETURN HOME", 200, 525);
+			g.drawString("CLICK TO RESTART GAME", 195, 575);
 		}
 	}
 
@@ -212,7 +217,7 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 	}
 
 	private void checkLevel() {
-		if (asteroids.size() == 0) {
+		if (asteroids.size() == 0 && ufo == null) {
 			newLevelDelay++;
 			if (newLevelDelay > 100) {
 				newLevel();
@@ -232,7 +237,7 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 		if (level%3 == 0) {
 			ufo = new UFO(UFO.randomSpawnLocation("x"), UFO.randomSpawnLocation("y"));
 		}
-		for (int i = 0; i < 5 + (int)(level/5); i++) {
+		for (int i = 0; i < 5 + (int)(level/3); i++) {
 			asteroids.add(new Asteroid(Asteroid.randomSpawnLocation("x"), Asteroid.randomSpawnLocation("y"), 0, new Vector2D(1, Math.toRadians(Utilities.randint(0, 360))), level));
 		}
 	}

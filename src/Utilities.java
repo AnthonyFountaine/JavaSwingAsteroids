@@ -27,4 +27,8 @@ public class Utilities {
     	}
 		return font;
 	}
+
+	public static Color randomColor() {
+		return new Color(randint(0, 255), randint(0, 255), randint(0, 255));
+	}
 }
