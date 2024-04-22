@@ -19,9 +19,9 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 	int newLevelDelay;
 	Font arcadeClassic = null, arcadeClassicBig = null;
 	Image introImage;
-
+	
     public GamePanel() {
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));	
+		setPreferredSize(new Dimension(WIDTH, HEIGHT));	
 		setFocusable(true);
 		requestFocus();
 		addKeyListener(this);
@@ -29,22 +29,22 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
         
 		timer = new Timer(15, this);
 		timer.start();
-
+		
         keys = new boolean[1000];
 		gameState = "intro";
 		
-		arcadeClassic = Utilities.loadFont("assets/ARCADECLASSIC.ttf", 30);
-		arcadeClassicBig = Utilities.loadFont("assets/ARCADECLASSIC.ttf", 50);
+		arcadeClassic = Utilities.loadFont("assets/arcadeClassic.ttf", 30);
+		arcadeClassicBig = Utilities.loadFont("assets/arcadeClassic.ttf", 50);
 		
 		introImage = Utilities.loadImage("assets/intro.png");
 	}
-
+	
 	public void paint(Graphics g){
 		if (gameState.equals("intro")) {
-			g.setColor(Color.YELLOW);
+			g.setColor(Color.GREEN);
 			g.drawImage(introImage, 0, 0, null);
 			g.setFont(arcadeClassicBig);
-			g.drawString("Press Enter", 225, 550);
+			g.drawString("CLICK TO START GAME", 125, 575);
 		}
 		if (gameState.equals("game")) {
 			g.setColor(Color.BLACK);
@@ -56,36 +56,39 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 			for (Bullet b : bullets) {
 				b.draw(g);
 			}
-	
+			
 			for (Asteroid a : asteroids) {
 				a.draw(g);
 			}
-	
+			
 			for(Debris d : debris) {
 				d.draw(g);
 			}
-
+			
 			g.setFont(arcadeClassic);
 			g.setColor(Color.WHITE);
 			g.drawString("SCORE   "+score + "     LEVEL   " + level + "     ASTEROIDS   " + asteroids.size(), 50, 50);
 			if (newLevelDelay > 0) {
-				g.drawString("LEVEL COMPLETE! ", 350, 300);
+				g.drawString("LEVEL COMPLETE!", 275, 325);
 			}
-
+			
 			g.translate(50, GamePanel.HEIGHT - 50);
 			for (int i = 0; i < player.getLives() - 1; i++) {
 				g.drawPolygon(player.playerShape[0], player.playerShape[1], player.playerShape[0].length);
 				g.translate(50, 0);
 			}
 		}
-
+		
 		if (gameState.equals("gameover")) {
 			g.setColor(Color.BLACK);
 			g.fillRect(0,0,getWidth(),getHeight());
-			g.setFont(arcadeClassic);
+			g.setFont(arcadeClassicBig);
 			g.setColor(Color.WHITE);
-			g.drawString("Game Over", 300, 200);
-			g.drawString("Score: " + score, 300, 250);
+			g.drawLine(WIDTH/2, 0, WIDTH/2, HEIGHT);
+			g.drawString("GAMEOVER", 275, 275);
+			g.drawString("SCORE: " + score, 290, 325);
+			g.drawString("ENTER TO RETURN HOME", 105, 525);
+			g.drawString("CLICK TO RESTART GAME", 110, 575);
 		}
 	}
 
@@ -108,6 +111,9 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 			checkLevel();
 		}
 		if (gameState.equals("gameover")) {
+			if (keys[KeyEvent.VK_ENTER]) {
+				gameState = "intro";
+			}
 		}
 		repaint();
 	}
@@ -136,12 +142,9 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 			gameState = "game";
 		}
 
-		if (gameState.equals("game")) {
-			startnewGame();
-		}
-
 		if (gameState.equals("gameover")) {
-			gameState = "intro";
+			startnewGame();
+			gameState = "game";
 		}
 	}
 

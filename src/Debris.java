@@ -35,7 +35,7 @@ public class Debris {
             g.drawLine((int)x, (int)y, (int)(x + length * Math.cos(angle)), (int)(y + length * Math.sin(angle)));
         }
         else if(type == ARC) {
-            g.setColor(Color.CYAN);
+            g.setColor(Color.PINK);
             g.drawArc((int)x, (int)y, 20, 20, (int)(Math.toDegrees(angle)), 75);
         }
         else{

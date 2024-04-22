@@ -18,13 +18,13 @@ public class Asteroid {
     private final int score;
     private int level;
  
-    public Asteroid(double x, double y, int childNum, Vector2D dir, int level) {
+    public Asteroid(double x, double y, int childNum, Vector2D dir, int level) {    
         this.x = x;
         this.y = y;
         this.childNum = childNum;
         this.dir = dir.copy();
         this.level = level;
-        this.speed = Utilities.randint(1, 2) * this.level/10 + 1;
+        this.speed = Utilities.randint(1, 1) + (this.level/10 + 1);
         this.randomshape = Utilities.randint(0, polygonXShapes.length - 1);
         this.polygonX = Arrays.copyOf(polygonXShapes[randomshape], polygonXShapes[randomshape].length);
         this.polygonY = Arrays.copyOf(polygonYShapes[randomshape], polygonYShapes[randomshape].length);

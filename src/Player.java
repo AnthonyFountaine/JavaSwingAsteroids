@@ -15,7 +15,7 @@ public class Player {
     private int lives;
     public final int[][] playerShape = new int[][] {new int[] {0, (int)(30 * -Math.cos(-Math.PI/2 -.3)), (int)(30 * -Math.cos(-Math.PI/2 - .3)) * 3/4, (int)(30 * -Math.cos(-Math.PI/2 + .3)) * 3/4, (int)(30 * -Math.cos(-Math.PI/2 + .3)), 0}, 
                                                            new int[] {0, (int)(30 * -Math.sin(-Math.PI/2 - .3)), (int)(30 * -Math.sin(-Math.PI/2 - .3)) * 3/4, (int)(30 * -Math.sin(-Math.PI/2 +.3)) * 3/4, (int)(30 * -Math.sin(-Math.PI/2 +.3)), 0}};
-
+    
     public Player(int x, int y, int lives) {
         this.x = x;
         this.y = y;

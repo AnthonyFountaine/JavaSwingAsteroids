@@ -24,6 +24,7 @@ public class UFO {
         this.dir = new Vector2D(new double[] {destx - x, desty - y});
         this.polygonX = new int[polygonXShape.length];
         this.polygonY = new int[polygonYShape.length];
+        this.shootCooldown = 240;
         dir.normalize();
     }
 
@@ -63,13 +64,13 @@ public class UFO {
             return;
         }
 
-        // 1 in 60 chance of shooting after 2 seconds, decrease as time goes
+        // 1 in 60 chance of shooting after 4 seconds, decrease as time goes
         if (Utilities.randint(1, 60 + shootCooldown/60) == 1) {
             double dx = player.getX() - this.x;
             double dy = player.getY() - this.y;
             Vector2D direction = new Vector2D(new double[] {dx, dy});
             bullets.add(new Bullet(x, y, direction, "UFO"));
-            shootCooldown = 120;
+            shootCooldown = 240;
         }
     }
 

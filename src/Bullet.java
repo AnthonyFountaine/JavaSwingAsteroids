@@ -82,8 +82,8 @@ public class Bullet {
                 }
                 if (asteroids.get(collideIndex).getchildNum() < 2) {
                     for (int i = 0; i < 2; i++) {
-                        asteroids.add(new Asteroid(asteroids.get(collideIndex).getX() + Utilities.randint(-5, 5),
-                        asteroids.get(collideIndex).getY() + Utilities.randint(-5, 5),
+                        asteroids.add(new Asteroid(asteroids.get(collideIndex).getX() + Utilities.randint(-15, 15),
+                        asteroids.get(collideIndex).getY() + Utilities.randint(-15, 15),
                         asteroids.get(collideIndex).getchildNum() + 1,
                         new Vector2D(1, Math.toRadians(Utilities.randint(0, 360))), asteroids.get(collideIndex).getLevel()));
                     }
