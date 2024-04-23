@@ -1,5 +1,11 @@
 import javax.swing.*;
 
+/*
+ * Main.java
+ * Anthony Fountaine
+ * This class handles creating the main JFrame (window) for the game
+ */
+
 public class Main extends JFrame{
 	GamePanel game = new GamePanel();
 		
