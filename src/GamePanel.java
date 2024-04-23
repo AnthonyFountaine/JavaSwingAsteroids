@@ -120,6 +120,17 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 			g.drawString("ENTER TO RETURN HOME", 200, 525);
 			g.drawString("CLICK TO RESTART GAME", 195, 575);
 		}
+		
+		if (gameState.equals("pause")) {
+			g.setColor(Color.BLACK);
+			g.fillRect(0, 0, WIDTH, HEIGHT);
+			
+			g.setFont(atarianBig);
+			g.setColor(Color.WHITE);
+			
+			g.drawString("PAUSED", 333, 300);
+			g.drawString("CLICK TO RETURN TO GAME", 175, 525);
+		}
 	}
 
 	@Override
@@ -149,11 +160,16 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 			//check game states (new level, no more lives)
 			checkGameOver();
 			checkLevel();
+			checkPause();
 		}
 		if (gameState.equals("gameover")) {
 			if (keys[KeyEvent.VK_ENTER]) {
 				gameState = "intro";
 			}
+
+		if (gameState.equals("pause")) {
+			checkPause();
+		}
 		}
 
 		//redraw on the screen
@@ -200,6 +216,11 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 		if (gameState.equals("gameover")) {
 			//start new game if player clicks on game over screen
 			startnewGame();
+			gameState = "game";
+		}
+
+		if (gameState.equals("pause")) {
+			//return to game if player clicks on pause screen
 			gameState = "game";
 		}
 	}
@@ -320,6 +341,12 @@ class GamePanel extends JPanel implements ActionListener, KeyListener, MouseList
 				newLevel();
 				newLevelDelay = 0;
 			}
+		}
+	}
+
+	private void checkPause() {
+		if (keys[KeyEvent.VK_ESCAPE]) {
+			gameState = "pause";
 		}
 	}
 

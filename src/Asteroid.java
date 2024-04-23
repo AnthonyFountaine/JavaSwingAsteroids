@@ -56,17 +56,17 @@ public class Asteroid {
         y += dir.getyComp() * speed;
 
         //wrap around screen
-        if (x < -40 + WIDTH_HEIGHT * (childNum + 1)) {
-            x = GamePanel.WIDTH + 40 - WIDTH_HEIGHT * (childNum + 1);
+        if (x < -80) {
+            x = GamePanel.WIDTH + 80;
         }
-        else if (x > GamePanel.WIDTH + 40 - WIDTH_HEIGHT * (childNum + 1)) {
-            x = -40  + WIDTH_HEIGHT * (childNum + 1);
+        else if (x > GamePanel.WIDTH + 80) {
+            x = -80 ;
         }
-        if (y < -40 + WIDTH_HEIGHT * (childNum + 1)) {
-            y = GamePanel.HEIGHT + 40 - WIDTH_HEIGHT * (childNum + 1);
+        if (y < - 80) {
+            y = GamePanel.HEIGHT + 80;
         }
-        else if (y > GamePanel.HEIGHT + 40 - WIDTH_HEIGHT * (childNum + 1)) {
-            y = -40 + WIDTH_HEIGHT * (childNum + 1);
+        else if (y > GamePanel.HEIGHT + 80) {
+            y = -80;
         }
 
         //if asteroid has been out of bounds for 3 seconds, change direction
@@ -77,7 +77,7 @@ public class Asteroid {
         else {
             timeOutOfBounds = 0;
         }
-        if (timeOutOfBounds > 180) {
+        if (timeOutOfBounds > 300) {
             dir = Utilities.randomdir();
         }
     }
